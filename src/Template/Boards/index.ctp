@@ -1,10 +1,9 @@
-<?=$this->Form->create($entity, ['url' => ['action' => 'editRecord']]) ?>
+<?=$this->Form->create($boards,
+['url' => ['action' => 'editRecord']]) ?>
 <fieldset>
-<p><?='ID = ' . $entity->id ?></p>
+<p><?='ID = ' . $boards->id ?></p>
 <?=$this->Form->hidden("id") ?>
-<?=$this->Form->text("name") ?>
-<?=$this->Form->text("title") ?>
-<?=$this->Form->textarea("content") ?>
+<?=$this->Form->textarea("name") ?>
 </fieldset>
 <?=$this->Form->button("送信") ?>
 <?=$this->Form->end() ?>

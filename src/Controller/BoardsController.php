@@ -6,7 +6,7 @@ use Cake\Log\Log;
 
 class BoardsController extends AppController {
     public function index($id = null) {
-        $this->set('entity', $this->Boards->newEntity());
+        $this->set('boards', $this->Boards->newEntity());
         if ($id != null) {
             try {
                 $entity = $this->Boards->get($id);
@@ -45,14 +45,11 @@ class BoardsController extends AppController {
         if ($this->request->is('put')) {
             try {
                 $entity = $this->Boards->get($this->request->data['id']);
-                $this->Boards->patchEntity($entity, $this->request->data);
+                $entity->name = $this->request->data['name'];
                 $this->Boards->save($entity);
             } catch (Exception $e) {
                 Log::write('debug', $e->getMessage());
             }
-        } else if ($this->request->is('post')) {
-            $entity = $this->Boards->newEntity($this->request->data);
-            $this->Boards->save($entity);
         }
         return $this->redirect(['action' => 'index']);
     }
