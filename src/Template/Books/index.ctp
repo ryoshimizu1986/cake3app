@@ -16,6 +16,7 @@
         <thead>
             <tr>
                 <th scope="col"><?= $this->Paginator->sort('id') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('title') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('price') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
@@ -24,6 +25,7 @@
             <?php foreach ($books as $book): ?>
             <tr>
                 <td><?= $this->Number->format($book->id) ?></td>
+                <td><?= h($book->title) ?></td>
                 <td><?= $this->Number->format($book->price) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $book->id]) ?>
