@@ -1,9 +1,5 @@
-<?=$this->Form->create($boards,
-['url' => ['action' => 'editRecord']]) ?>
-<fieldset>
-<p><?='ID = ' . $boards->id ?></p>
-<?=$this->Form->hidden("id") ?>
-<?=$this->Form->textarea("name") ?>
-</fieldset>
-<?=$this->Form->button("送信") ?>
-<?=$this->Form->end() ?>
+<h1>Databaseサンプル</h1>
+<p>COUNT:<?=$count ?></p>
+<pre>
+<?php print_r($data); ?>
+</pre>
