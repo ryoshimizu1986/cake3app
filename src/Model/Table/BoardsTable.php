@@ -1,21 +1,47 @@
 <?php
 namespace App\Model\Table;
 
-use Cake\ORM\Table;
-use Cake\Event\Event;
 use Cake\ORM\Query;
-use ArrayObject;
-use Cake\Datasource\EntityInterface;
-use Cake\Event\EventInterface;
+use Cake\ORM\RulesChecker;
+use Cake\ORM\Table;
+use Cake\Validation\Validator;
 
 class BoardsTable extends Table {
-    public function beforeSave(Event $event, EntityInterface $entity, $options){
-        $n = $this->find('all', ['conditions'=>['name'=>$entity->name]])->count();
-
-        if ($n == 0) {
-            return true;
-        } else {
-            return false;
-        }
+    public function initialize(array $config){
+        $this->belongsTo('People');
     }
+    
+    public function validationDefault(Validator $validator){
+        $validator
+            ->integer('id');
+
+        $validator
+            ->integer('person_id')
+            ->requirePresence('person_id');
+
+        $validator
+            ->notEmpty('name', '必須項目です。');
+            
+        $validator
+            ->requirePresence('title')
+            ->notEmpty('title', '必須項目です。');
+        
+        $validator
+            ->notEmpty('content', '必須項目です。');
+
+        return $validator;
+    }
+
+    public function buildRules(RulesChecker $rules){
+        $rules->add($rules->isUnique(['name'], '既に登録済みです。'));
+        return $rules;
+    }
+
+    public function maxRecords($data, $field, $num){
+        $n = $this->find()
+            ->where([$field=>$data])
+            ->count();
+        return $n < $num ? true : false;
+    }
+
 }

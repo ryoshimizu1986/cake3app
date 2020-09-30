@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class CreateBoards extends AbstractMigration
+class CreatePeople extends AbstractMigration
 {
     /**
      * Change Method.
@@ -12,20 +12,20 @@ class CreateBoards extends AbstractMigration
      */
     public function change()
     {
-        $table = $this->table('boards');
-        $table->addColumn('person_id', 'integer', [
+        $table = $this->table('people');
+        $table->addColumn('name', 'text', [
             'default' => null,
             'null' => true,
         ]);
-        $table->addColumn('title', 'string', [
+        $table->addColumn('password', 'text', [
             'default' => null,
-            'limit' => 255,
-            'null' => false,
+            'null' => true,
         ]);
-        $table->addColumn('content', 'text', [
+        $table->addColumn('comment', 'text', [
             'default' => null,
-            'null' => false,
+            'null' => true,
         ]);
+        $table->addIndex(['name'], ['unique' => true]);
         $table->create();
     }
 }

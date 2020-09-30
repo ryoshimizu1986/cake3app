@@ -1,43 +1,86 @@
 <?php
 namespace App\Controller;
 
-use \Exception;
-use Cake\Log\Log;
+use Cake\ORM\TableRegistry;
+use Cake\Validation\Validator;
 
 class BoardsController extends AppController {
-    public function index($id = null) {
-        $data = $this->Boards->find('all');
-        $this->set('data', $data->toArray());
-        $this->set('count', $data->count());
+    
+    private  $people;
+
+    public function initialize(){
+        parent::initialize();
+        $this->People = TableRegistry::get('People');
     }
 
-    public function addRecord() {
-        if ($this->request->is('post')) {
-            $board = $this->Boards->newEntity($this->request->data);
-            $this->Boards->save($board);
-        }
-        $this->autoRender = false;
-        echo"<pre>";
-        print_r($this->request->data);
-        echo "</pre>";
-        //return $this->redirect(['action' => 'index']);
+    public function index(){
+        $data = $this->Boards
+            ->find('all')
+            ->order(['Boards.id' => 'DESC'])
+            ->contain(['People']);
+            $this->set('data', $data);
     }
 
-    public function delRecord() {
-        if ($this->request->is('post')) {
-            $this->Boards->deleteAll(
-                ['name' => $this->request->data['name']]
-            );
+    public function add(){
+        if ($this->request->isPost()){
+            if (!$this->people->checkNameAndPass($this->request->data)){
+                $this->Flash->error('名前かパスワードを確認ください。');
+            } else {
+                $res = $this->people->find()
+                    ->where(['name' => $this->request->data['name']])
+                    ->andWhere(['password' => $this->request->data['password']])->first();
+                $board = $this->Boards->newEntity();
+                $board->name = $this->request->data['name'];
+                $board->title = $this->request->data['title'];
+                $board->content = $this->request->data['content'];
+                $board->person_id = $res['id'];
+
+                if ($this->Boards->save($board)) {
+                    $this->redirect(['action' => 'index']);
+                }
+            }
         }
-        $this->redirect(['action' => 'index']);
+        $this->set('entity', $this->Boards->newEntity());
     }
 
-    public function editRecord() {
-        if ($this->request->is('post')) {
-            $arr1 = ['name' => $this->request->data['name']];
-            $arr2 = ['title' => $this->request->data['title']];
-            $this->Boards->updateAll($arr2, $arr1);
+    public function show($param = 0){
+        $data = $this->Boards
+            ->find()
+            ->where(['Boards.id' => $param])
+            ->contain(['People'])
+            ->first();
+        $this->set('data', $data);
+    }
+
+    public function show2($param = 0){
+        $data = $this->People->get($param);
+        $this->set('data', $data);
+    }
+
+    public function edit($param = 0){
+        if ($this->request->isPut()) {
+            $board = $this->Boards
+                ->find()
+                ->where(['Boards.id' => $param])
+                ->contain(['People'])
+                ->first();
+            $board->title = $this->request->data['title'];
+            $board->content = $this->request->data['content'];
+            $board->person_id = $this->request->data['person_id'];
+            if (!$this->people->checkNameAndPass($this->request->data)){
+                $this->Flash->error('名前かパスワードを確認ください。');
+            } else {
+                if ($this->Boards->save($board)) {
+                    $this->redirect(['action' => 'index']);
+                }
+            }
+        } else {
+            $board = $this->Boards
+                ->find()
+                ->where(['Boards.id' => $param])
+                ->contain(['People'])
+                ->first();
         }
-        return $this->redirect(['action' => 'index']);
+        $this->set('entity', $board);
     }
 }
